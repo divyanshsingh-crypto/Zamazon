@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zamazon — Beyond The Summit</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0e0e0e;
+    --snow: #f5f0eb;
+    --stone: #8a7f74;
+    --pine: #2d4a3e;
+    --peak: #c8a96e;
+    --sky: #4a7fa5;
+    --rust: #b85c38;
+    --mist: rgba(245,240,235,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    color: var(--snow);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: linear-gradient(to bottom, rgba(14,14,14,0.95), transparent);
+    backdrop-filter: blur(4px);
+  }
+  .logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2rem;
+    letter-spacing: 0.15em;
+    color: var(--peak);
+    text-decoration: none;
+  }
+  .logo span { color: var(--snow); }
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+  nav ul a {
+    text-decoration: none;
+    color: var(--snow);
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: color 0.2s;
+    position: relative;
+  }
+  nav ul a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; right: 0; height: 1px;
+    background: var(--peak);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  nav ul a:hover { color: var(--peak); }
+  nav ul a:hover::after { transform: scaleX(1); }
+
+  /* ── HERO ── */
+  #hero {
+    height: 100vh;
+    background:
+      linear-gradient(to bottom, rgba(14,14,14,0.3) 0%, rgba(14,14,14,0.65) 60%, var(--ink) 100%),
+      url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1800&q=80') center/cover no-repeat;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    padding: 0 8vw;
+    position: relative;
+  }
+  .hero-tag {
+    font-size: 0.78rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--peak); margin-bottom: 1.2rem;
+    border: 1px solid var(--peak); padding: 0.3rem 0.8rem; display: inline-block;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(5rem, 12vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    animation: fadeUp 0.8s 0.15s ease both;
+  }
+  .hero-title em { color: var(--peak); font-style: normal; }
+  .hero-sub {
+    margin-top: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: rgba(245,240,235,0.7);
+    max-width: 480px;
+    line-height: 1.6;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+  .hero-cta {
+    margin-top: 2.5rem; display: flex; gap: 1rem;
+    animation: fadeUp 0.8s 0.45s ease both;
+  }
+  .btn {
+    padding: 0.85rem 2.2rem;
+    font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase;
+    text-decoration: none; font-weight: 500;
+    transition: all 0.25s;
+    cursor: pointer; border: none; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-primary {
+    background: var(--peak); color: var(--ink);
+  }
+  .btn-primary:hover { background: #d4b87a; transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent; color: var(--snow);
+    border: 1px solid rgba(245,240,235,0.4);
+  }
+  .btn-outline:hover { border-color: var(--snow); transform: translateY(-2px); }
+
+  .scroll-hint {
+    position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    font-size: 0.7rem; letter-spacing: 0.2em; color: rgba(245,240,235,0.4);
+    text-transform: uppercase;
+    animation: bounce 2s infinite;
+  }
+  .scroll-hint::after {
+    content: '';
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, rgba(245,240,235,0.4), transparent);
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 7rem 8vw; }
+
+  .section-label {
+    font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--peak); margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+  }
+  .section-body {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: rgba(245,240,235,0.65);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    max-width: 680px;
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+    border-top: 1px solid rgba(245,240,235,0.08);
+  }
+  .about-img {
+    position: relative; overflow: hidden;
+  }
+  .about-img img {
+    width: 100%; aspect-ratio: 4/5; object-fit: cover;
+    display: block; filter: grayscale(20%);
+    transition: filter 0.4s, transform 0.6s;
+  }
+  .about-img:hover img { filter: grayscale(0); transform: scale(1.03); }
+  .about-img::before {
+    content: ''; position: absolute; inset: 0;
+    border: 2px solid var(--peak);
+    transform: translate(12px, 12px);
+    z-index: -1;
+  }
+  .treks-list {
+    margin-top: 2.5rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 2rem;
+  }
+  .treks-list li {
+    list-style: none; font-size: 0.88rem;
+    color: rgba(245,240,235,0.7);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(245,240,235,0.08);
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .treks-list li::before { content: '▲'; font-size: 0.5rem; color: var(--peak); }
+
+  /* ── ESSENTIALS ── */
+  #essentials { background: #111; }
+  .ess-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1px; margin-top: 3.5rem;
+    border: 1px solid rgba(245,240,235,0.08);
+  }
+  .ess-card {
+    padding: 2rem 1.8rem;
+    border: 1px solid rgba(245,240,235,0.06);
+    background: rgba(245,240,235,0.02);
+    transition: background 0.3s;
+  }
+  .ess-card:hover { background: rgba(200,169,110,0.06); }
+  .ess-icon { font-size: 1.6rem; margin-bottom: 1rem; }
+  .ess-card h4 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.15rem; letter-spacing: 0.1em;
+    color: var(--peak); margin-bottom: 0.5rem;
+  }
+  .ess-card p { font-size: 0.83rem; color: rgba(245,240,235,0.55); line-height: 1.6; }
+
+  /* ── MERCH ── */
+  #merch { border-top: 1px solid rgba(245,240,235,0.08); }
+  .merch-intro { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3.5rem; }
+  .merch-tabs {
+    display: flex; gap: 0.5rem;
+  }
+  .tab-btn {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    background: transparent; color: rgba(245,240,235,0.5);
+    border: 1px solid rgba(245,240,235,0.15);
+    cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .tab-btn.active, .tab-btn:hover {
+    background: var(--peak); color: var(--ink); border-color: var(--peak);
+  }
+  .merch-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem;
+  }
+  .merch-card {
+    background: #191919;
+    overflow: hidden; position: relative;
+    transition: transform 0.3s;
+    cursor: pointer;
+  }
+  .merch-card:hover { transform: translateY(-6px); }
+  .merch-img {
+    width: 100%; aspect-ratio: 3/4; object-fit: cover;
+    display: block; background: #252525;
+    transition: transform 0.4s;
+  }
+  .merch-card:hover .merch-img { transform: scale(1.05); }
+  .merch-img-placeholder {
+    width: 100%; aspect-ratio: 3/4;
+    background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; color: rgba(245,240,235,0.1);
+  }
+  .merch-info { padding: 1rem 1.2rem; }
+  .merch-info h4 { font-size: 0.88rem; font-weight: 500; margin-bottom: 0.3rem; }
+  .merch-info span { font-size: 0.78rem; color: var(--peak); }
+  .merch-badge {
+    position: absolute; top: 0.8rem; left: 0.8rem;
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--pine); color: var(--snow);
+    padding: 0.2rem 0.5rem;
+  }
+
+  /* ── REVIEWS ── */
+  #reviews { background: #0a0a0a; border-top: 1px solid rgba(245,240,235,0.08); }
+  .reviews-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3.5rem; }
+  .reviews-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;
+  }
+  .review-card {
+    background: #141414;
+    padding: 2rem;
+    border-left: 3px solid transparent;
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative;
+  }
+  .review-card:hover { border-left-color: var(--peak); transform: translateY(-4px); }
+  .review-quote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.98rem;
+    line-height: 1.75;
+    color: rgba(245,240,235,0.75);
+    margin-bottom: 1.5rem;
+  }
+  .review-quote::before {
+    content: '\201C';
+    font-size: 3rem; color: var(--peak); line-height: 0.3;
+    display: block; margin-bottom: 0.8rem;
+  }
+  .reviewer { display: flex; align-items: center; gap: 0.8rem; }
+  .reviewer-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--pine);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 500; color: var(--snow);
+  }
+  .reviewer-name { font-size: 0.85rem; font-weight: 500; }
+  .reviewer-meta { font-size: 0.73rem; color: var(--stone); margin-top: 0.1rem; }
+  .stars { color: var(--peak); font-size: 0.75rem; margin-bottom: 0.6rem; letter-spacing: 2px; }
+  .media-section { margin-top: 4rem; }
+  .media-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.8rem; letter-spacing: 0.1em; margin-bottom: 1.5rem;
+    color: rgba(245,240,235,0.5);
+  }
+  .audio-player {
+    background: #191919;
+    padding: 1.5rem 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    max-width: 500px;
+  }
+  .audio-icon { font-size: 1.4rem; color: var(--peak); }
+  .audio-info { flex: 1; }
+  .audio-info p { font-size: 0.85rem; font-weight: 500; }
+  .audio-info span { font-size: 0.73rem; color: var(--stone); }
+  audio { width: 100%; margin-top: 0.6rem; accent-color: var(--peak); }
+
+  /* ── ENQUIRY ── */
+  #enquiry { border-top: 1px solid rgba(245,240,235,0.08); }
+  .enquiry-wrap { display: grid; grid-template-columns: 1fr 1.5fr; gap: 6rem; align-items: start; }
+  .enquiry-aside h2 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 3.5rem; letter-spacing: 0.06em; line-height: 1; margin-bottom: 1.2rem;
+  }
+  .enquiry-aside p {
+    font-family: 'Playfair Display', serif; font-style: italic;
+    color: rgba(245,240,235,0.6); font-size: 1rem; line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  .contact-detail { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.8rem; }
+  .contact-detail span:first-child { font-size: 1rem; }
+  .contact-detail span:last-child { font-size: 0.85rem; color: rgba(245,240,235,0.6); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .form-full { grid-column: 1 / -1; }
+  .field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .field label {
+    font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: rgba(245,240,235,0.5);
+  }
+  .field input, .field select, .field textarea {
+    background: #141414;
+    border: 1px solid rgba(245,240,235,0.1);
+    color: var(--snow);
+    padding: 0.85rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .field select option { background: #141414; }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--peak);
+  }
+  .field textarea { resize: vertical; min-height: 120px; }
+  .checkbox-row {
+    display: flex; align-items: center; gap: 0.7rem;
+    font-size: 0.84rem; color: rgba(245,240,235,0.6);
+    cursor: pointer; margin-top: 0.5rem;
+  }
+  .checkbox-row input { width: 16px; height: 16px; accent-color: var(--peak); cursor: pointer; }
+  .form-actions { display: flex; gap: 1rem; margin-top: 0.5rem; }
+  .success-msg {
+    display: none;
+    background: rgba(45,74,62,0.4); border: 1px solid var(--pine);
+    padding: 1rem 1.5rem; margin-top: 1rem;
+    font-size: 0.88rem; color: #7ecba1;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 8vw;
+    border-top: 1px solid rgba(245,240,235,0.08);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.8rem; letter-spacing: 0.15em; color: var(--peak);
+  }
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a {
+    font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(245,240,235,0.4); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--peak); }
+  footer p { font-size: 0.75rem; color: rgba(245,240,235,0.25); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { gap: 1.2rem; }
+    section { padding: 5rem 5vw; }
+    #about { grid-template-columns: 1fr; gap: 3rem; }
+    .about-img { display: none; }
+    .enquiry-wrap { grid-template-columns: 1fr; gap: 3rem; }
+    .merch-intro { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+    .reviews-header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+  @media(max-width: 600px) {
+    nav ul { display: none; }
+    .hero-title { font-size: 4.5rem; }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#hero">ZAM<span>AZON</span></a>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#essentials">Essentials</a></li>
+    <li><a href="#merch">Merch</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#enquiry">Enquire</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-tag">Est. in the Mountains</div>
+  <h1 class="hero-title">Beyond<br><em>The</em><br>Summit</h1>
+  <p class="hero-sub">India's most trusted guide for high-altitude treks, Himalayan expeditions, and wilderness journeys.</p>
+  <div class="hero-cta">
+    <a href="#enquiry" class="btn btn-primary">Register Now</a>
+    <a href="#about" class="btn btn-outline">Explore Treks</a>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-img">
+    <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&q=80" alt="Trekking in the Himalayas">
+  </div>
+  <div>
+    <p class="section-label">Who We Are</p>
+    <h2 class="section-title">India's <em style="color:var(--peak)">Wildest</em> Trails, Guided Safely</h2>
+    <p class="section-body">
+      Zamazon is a tour guide company that helps you reach different and difficult treks and mountain peaks — making your journey to the destination easier and far more comfortable. From the Himalayas to the Western Ghats, we've charted every trail worth climbing.
+    </p>
+    <p class="section-body" style="margin-top:1rem;">
+      Trekking in India offers vast landscapes and amazing terrain. The trend has gained massive momentum, with tourists from all over the world visiting famous trails. Our routes are rated easy, moderate, and tough — so every explorer finds the right challenge.
+    </p>
+    <ul class="treks-list">
+      <li>Lamkhaga Pass</li>
+      <li>Kafni Glacier</li>
+      <li>Pindari Glacier</li>
+      <li>Nanda Devi East Base Camp</li>
+      <li>Spiti to Ladakh</li>
+      <li>Western Ghats Trail</li>
+      <li>Coorg Forest Trek</li>
+      <li>Sikkim High Route</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ESSENTIALS -->
+<section id="essentials">
+  <p class="section-label">Be Prepared</p>
+  <h2 class="section-title">Gear & Essentials</h2>
+  <p class="section-body">Everything you need before you step onto the trail. We've compiled the complete list from seasoned mountaineers.</p>
+
+  <div class="ess-grid">
+    <div class="ess-card">
+      <div class="ess-icon">⛏️</div>
+      <h4>Climbing Gear</h4>
+      <p>Ice axe, hammer, pulley, pegs and slings, crampons — the core arsenal for any serious ascent.</p>
+    </div>
+    <div class="ess-card">
+      <div class="ess-icon">🏕️</div>
+      <h4>Shelter & Sleep</h4>
+      <p>Lightweight tent and a warm sleeping bag rated for sub-zero temperatures. Never compromise here.</p>
+    </div>
+    <div class="ess-card">
+      <div class="ess-icon">🧭</div>
+      <h4>Navigation</h4>
+      <p>Compass, torch light, and whistle. Old-school tools that save lives when technology fails.</p>
+    </div>
+    <div class="ess-card">
+      <div class="ess-icon">🎒</div>
+      <h4>Trekking Pack</h4>
+      <p>Sturdy backpack with proper load distribution, trekking shoes for grip, and trek pants for comfort.</p>
+    </div>
+    <div class="ess-card">
+      <div class="ess-icon">💧</div>
+      <h4>Hydration & Fuel</h4>
+      <p>Water bottle is non-negotiable. Pack high-calorie snacks to keep hunger pangs at bay on long ascents.</p>
+    </div>
+    <div class="ess-card">
+      <div class="ess-icon">🩹</div>
+      <h4>Safety & Health</h4>
+      <p>Personal medical kit, hand sanitizer, rope, and a documented medical history shared with your guide.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MERCH -->
+<section id="merch">
+  <div class="merch-intro">
+    <div>
+      <p class="section-label">Zamazon Store</p>
+      <h2 class="section-title">Carry The Mountain</h2>
+    </div>
+    <div class="merch-tabs">
+      <button class="tab-btn active" onclick="filterMerch('all', this)">All</button>
+      <button class="tab-btn" onclick="filterMerch('apparel', this)">Apparel</button>
+      <button class="tab-btn" onclick="filterMerch('accessories', this)">Accessories</button>
+    </div>
+  </div>
+
+  <div class="merch-grid" id="merchGrid">
+    <!-- T-Shirts -->
+    <div class="merch-card" data-cat="apparel">
+      <span class="merch-badge">Best Seller</span>
+      <div class="merch-img-placeholder"><img src=Olive.png height=310 width=275></div>
+      <div class="merch-info"><h4>Summit Tee — Olive</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">180 GSM Organic Cotton</p>
+        <span>₹ 799</span></div>
+    </div>
+    <div class="merch-card" data-cat="apparel">
+      <div class="merch-img-placeholder"><img src=Grey.png height=310 width=275></div>
+      <div class="merch-info"><h4>Summit Tee — Charcoal</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">180 GSM Organic Cotton</p>
+        <span>₹ 799</span></div>
+    </div>
+    <div class="merch-card" data-cat="apparel">
+      <div class="merch-img-placeholder"><img src=White.png height=315 width=265></div>
+      <div class="merch-info"><h4>Trail Tee — Stone White</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">180 GSM Organic Cotton</p>
+        <span>₹ 749</span></div>
+    </div>
+    <div class="merch-card" data-cat="apparel">
+      <span class="merch-badge">New Arrival</span>
+      <div class="merch-img-placeholder"><img src=Navy.png height=315 width=270></div>
+      <div class="merch-info"><h4>Trail Tee — Deep Navy</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">Moisture-Wicking Performance</p>
+        <span>₹ 749</span></div>
+    </div>
+    <!-- Diaries -->
+    <div class="merch-card" data-cat="accessories">
+      <span class="merch-badge">New</span>
+      <div class="merch-img-placeholder">&nbsp<img src=Diary1.png height=260 width=260></div>
+      <div class="merch-info"><h4>Explorer Diary — Brown</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">Full-Grain Leather, Refillable</p>
+        <span>₹ 349</span></div>
+    </div>
+    <div class="merch-card" data-cat="accessories">
+      <div class="merch-img-placeholder"><img src=Diary2.png height=270 width=270></div>
+      <div class="merch-info"><h4>Explorer Diary — Forest</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">Full-Grain Leather, Refillable</p>
+        <span>₹ 349</span></div>
+    </div>
+    <!-- Cups -->
+    <div class="merch-card" data-cat="accessories">
+      <div class="merch-img-placeholder"><img src=cup1.png height=250 width=220></div>
+      <div class="merch-info"><h4>Trek Mug — Pine Green</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">Enameled Steel, Campfire Safe</p>
+        <span>₹ 399</span></div>
+    </div>
+    <div class="merch-card" data-cat="accessories">
+      <div class="merch-img-placeholder"><img src=cup2.png height=250 width=220></div>
+      <div class="merch-info"><h4>Voyagers Cup — Summit Edition</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">Enameled Steel, Campfire Safe</p>
+        <span>₹ 449</span></div>
+    </div>
+     <div class="merch-card" data-cat="accessories">
+      <span class="merch-badge">New</span>
+      <div class="merch-img-placeholder"><img src=cup3.png height=310 width=200></div>
+      <div class="merch-info"><h4>Summit Flask — Leatherette</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">Leather Covering</p>
+        <span>₹ 799</span></div>
+    </div>
+    <!-- Phone Covers -->
+    <div class="merch-card" data-cat="accessories">
+      <span class="merch-badge">Popular</span>
+      <div class="merch-img-placeholder"><img src=cover1.png height=280 width=175></div>
+      <div class="merch-info"><h4>Peak Phone Case — Iphone</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">Impact-Resistant TPU</p>
+        <span>₹ 399</span></div>
+    </div>
+    <div class="merch-card" data-cat="accessories">
+      <div class="merch-img-placeholder"><img src=cover2.png height=280 width=190></div>
+      <div class="merch-info"><h4>Peak Phone Case — Samsung</h4>
+        <p style="font-size: 0.7rem; color: var(--stone); margin-bottom: 0.5rem;">Impact-Resistant TPU</p>
+        <span>₹ 349</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS & EXPERIENCES -->
+<section id="reviews">
+  <div class="reviews-header">
+    <div>
+      <p class="section-label">Voices From The Trail</p>
+      <h2 class="section-title">Reviews & Experiences</h2>
+    </div>
+    <p style="font-size:0.82rem; color:var(--stone); max-width:280px; text-align:right; line-height:1.6;">Hear directly from adventurers who've trekked with us across India's most demanding terrain.</p>
+  </div>
+
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-quote">The Spiti to Ladakh route was breathtaking. Our Zamazon guide knew every stone on that trail. I felt completely safe even at 5,000m altitude.</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">RK</div>
+        <div>
+          <div class="reviewer-name">Rahul Kumar</div>
+          <div class="reviewer-meta">Spiti–Ladakh Traverse · Engineer, Delhi</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-quote">First time trekking and Zamazon made it unforgettable. The team was patient, the gear tips were perfect, and the nature sounds they shared on the app? Pure bliss.</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">PM</div>
+        <div>
+          <div class="reviewer-name">Priya Mehta</div>
+          <div class="reviewer-meta">Pindari Glacier · Teacher, Mumbai</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★☆</div>
+      <p class="review-quote">Kafni Glacier in October was absolutely surreal. The campsite views at night had me in tears. Will be signing up for the Nanda Devi camp next season.</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">AS</div>
+        <div>
+          <div class="reviewer-name">Arjun Singh</div>
+          <div class="reviewer-meta">Kafni Glacier · Photographer, Jaipur</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-quote">The registration form was easy, the response was quick, and on-ground support was exceptional. Zamazon runs a tight, professional operation.</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">NG</div>
+        <div>
+          <div class="reviewer-name">Neha Gupta</div>
+          <div class="reviewer-meta">Lamkhaga Pass · Doctor, Bengaluru</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-quote">Bought the Explorer Diary from the merch store and it's been my companion on every trip since. Solid quality and the Zamazon emboss on the cover is beautiful.</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">VT</div>
+        <div>
+          <div class="reviewer-name">Vikram Thakur</div>
+          <div class="reviewer-meta">Merch Customer · Architect, Pune</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-quote">I joined the trekking camp as a solo traveller and came back with lifetime friends. The Western Ghats route was challenging but worth every step and every blister.</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">SJ</div>
+        <div>
+          <div class="reviewer-name">Sneha Joshi</div>
+          <div class="reviewer-meta">Western Ghats Trail · Student, Hyderabad</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Player -->
+  <div class="media-section">
+    <p class="media-title">🎵 Ambient Nature Sounds from the Trail</p>
+    <div class="audio-player">
+      <div class="audio-icon">🌿</div>
+      <div class="audio-info">
+        <p>Nature Sounds — Himalayan Forest</p>
+        <span>Recorded on the Kafni Glacier trail</span>
+        <audio controls src="Nature.mp3">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ENQUIRY / REGISTRATION -->
+<section id="enquiry">
+  <div class="enquiry-wrap">
+    <div class="enquiry-aside">
+      <p class="section-label">Join The Expedition</p>
+      <h2>Register<br>For A Camp</h2>
+      <p>Fill in your details and our team will get in touch within 48 hours with all the information you need for your next adventure.</p>
+      <div class="contact-detail"><span>📍</span><span>Kanpur, Uttar Pradesh, India</span></div>
+      <div class="contact-detail"><span>📧</span><span>hello@zamazon.in</span></div>
+      <div class="contact-detail"><span>📞</span><span>+91 94171 147714</span></div>
+    </div>
+
+    <div>
+      <div class="form-grid">
+        <div class="field">
+          <label>First Name</label>
+          <input type="text" id="fname" placeholder="Rahul">
+        </div>
+        <div class="field">
+          <label>Last Name</label>
+          <input type="text" id="lname" placeholder="Kumar">
+        </div>
+        <div class="field">
+          <label>E-Mail Address</label>
+          <input type="email" id="email" placeholder="rahul@email.com">
+        </div>
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="tel" id="phone" placeholder="98765 43210" maxlength="10">
+        </div>
+        <div class="field">
+          <label>Profession</label>
+          <input type="text" id="profession" placeholder="e.g. Engineer">
+        </div>
+        <div class="field">
+          <label>Age</label>
+          <input type="number" id="age" placeholder="28" maxlength="2" min="10" max="80">
+        </div>
+        <div class="field">
+          <label>Gender</label>
+          <select id="gender">
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other / Prefer not to say</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Country</label>
+          <select id="country">
+            <option value="IND">India</option>
+            <option value="SRI">Sri Lanka</option>
+            <option value="BAN">Bangladesh</option>
+            <option value="MAL">Maldives</option>
+            <option value="RUS">Russia</option>
+            <option value="UAE">United Arab Emirates</option>
+            <option value="USA">United States</option>
+            <option value="SPR">Singapore</option>
+            <option value="CA">Canada</option>
+            <option value="FR">France</option>
+            <option value="OTH">Other</option>
+          </select>
+        </div>
+        <div class="field form-full" id="otherCountryField" style="display:none">
+          <label>Please Specify Country</label>
+          <input type="text" id="otherCountry" placeholder="Your country">
+        </div>
+        <div class="field form-full">
+          <label>Medical History (if any)</label>
+          <textarea id="medical" placeholder="Any conditions, allergies, or medications our team should know about..."></textarea>
+        </div>
+        <div class="form-full">
+          <label class="checkbox-row">
+            <input type="checkbox" id="subscribe">
+            Subscribe to the Zamazon newsletter for camp updates and trail news
+          </label>
+        </div>
+        <div class="form-actions form-full">
+          <button class="btn btn-primary" onclick="submitForm()">Submit Registration</button>
+          <button class="btn btn-outline" onclick="resetForm()">Reset</button>
+        </div>
+        <div class="success-msg form-full" id="successMsg">
+          ✓ Registration received! We will contact you within 48 hours with further details.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ZAMAZON</div>
+  <div class="footer-links">
+    <a href="#about">About</a>
+    <a href="#essentials">Essentials</a>
+    <a href="#merch">Merch</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#enquiry">Enquire</a>
+  </div>
+  <p>© 2025 Zamazon. Beyond The Summit.</p>
+</footer>
+
+<script>
+  // Merch filter
+  function filterMerch(cat, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.merch-card').forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // Show other country field
+  document.getElementById('country').addEventListener('change', function() {
+    document.getElementById('otherCountryField').style.display =
+      this.value === 'OTH' ? '' : 'none';
+  });
+
+  // Form submit
+  function submitForm() {
+    const fname = document.getElementById('fname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    if (!fname || !email) {
+      alert('Please fill in at least your First Name and E-Mail to continue.');
+      return;
+    }
+    document.getElementById('successMsg').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('successMsg').style.display = 'none';
+    }, 6000);
+  }
+
+  function resetForm() {
+    ['fname','lname','email','phone','profession','age','medical','otherCountry'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('gender').value = '';
+    document.getElementById('country').value = 'IND';
+    document.getElementById('subscribe').checked = false;
+    document.getElementById('otherCountryField').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'none';
+  }
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.ess-card, .merch-card, .review-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
